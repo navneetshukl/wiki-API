@@ -11,7 +11,7 @@ app.set('view engine', 'ejs');
 
 app.use(bodyparser.urlencoded({extended:true}));
 
-mongoose.connect("mongodb://localhose:27017/wikiDB");
+mongoose.connect("mongodb://localhost:27017/wikiDB");
 
 
 const schema=mongoose.Schema({
@@ -21,10 +21,47 @@ const schema=mongoose.Schema({
 });
 const article=mongoose.model("article",schema);
 
+app.get("/articles",function(req,res){
+    article.find(function(err,foundArticles){
+       if(err){
+        res.send(err);
+       }
+       else{
+       
+        res.send(foundArticles);
+       
+       }
+    });
 
+});
 
-app.get("/",function(req,res){
-    res.send("Hi");
+app.post("/articles",function(req,res){
+    console.log(req.body.title);
+    console.log(req.body.content);
+
+    const newArticle=new article({
+        title: req.body.title,
+        content: req.body.content
+    });
+    newArticle.save(function(err){
+        if(err){
+            res.send("Sorry there is some error");
+        }
+        else{
+            res.send("Data registered Successfully");
+        }
+    });
+});
+
+app.delete("/articles",function(req,res){
+    article.deleteMany(function(err){
+        if(err){
+            res.send("Sorry there was some error");
+        }
+        else{
+            res.send("Successfully deleted")
+        }
+    })
 })
 
 app.listen(3000,function(){
