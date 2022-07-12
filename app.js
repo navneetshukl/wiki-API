@@ -59,11 +59,66 @@ app.delete("/articles",function(req,res){
             res.send("Sorry there was some error");
         }
         else{
-            res.send("Successfully deleted")
+            res.send("Successfully deleted");
         }
-    })
+    });
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+app.route("/articles/:articleTitle")
+.get(function(req,res){
+    article.findOne({title:req.params.articleTitle},function(err,foundArticle){
+        if(foundArticle){
+            res.send(foundArticle);
+        }
+        else{
+            res.send("Sorry there were no articles of the given title");
+        }
+    });
 })
+
+.put(function(req,res){
+    
+    article.updateOne({title:req.params.articleTitle},
+        {title: req.body.title, content: req.body.content},
+        function(err){
+            if(!err){
+                res.send("Data updated successfully");
+            }
+            else{
+                res.send("Sorry there was some error");
+            }
+        });
+
+})
+
+.patch(function(req,res){
+
+    article.updateOne({title:req.params.articleTitle},
+        {$set: req.body},
+        function(err){
+            if(!err){
+                res.send("Data updates successfully");
+            }
+            else{
+                res.send("There was some error");
+            }
+        });
+})
+
+.delete(function(req,res){
+    article.deleteOne({title:req.params.articleTitle},
+        function(err){
+            if(!err){
+                res.send("Data deleted successfully");
+            }
+            else{
+                res.send("Sorry there was some error");
+            }
+        });
+});
 
 app.listen(3000,function(){
     console.log("The Server Started at port 3000");
-})
+});
